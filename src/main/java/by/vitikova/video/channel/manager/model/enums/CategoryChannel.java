@@ -1,5 +1,8 @@
 package by.vitikova.video.channel.manager.model.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum CategoryChannel {
 
     ENTERTAINMENT("ENTERTAINMENT"),

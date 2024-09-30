@@ -15,7 +15,6 @@ public interface ChannelService {
     ChannelDto findByName(String name);
 
     Page<ChannelInfoDto> getAll(Integer offset, Integer limit, String name, LanguageChannel language, CategoryChannel category);
-//    Page<ChannelInfoDto> getAll(Integer offset, Integer limit);
 
     ChannelDto create(ChannelCreateDto dto);
 

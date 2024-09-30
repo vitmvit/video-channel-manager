@@ -30,6 +30,12 @@ public class ExceptionHandlerController {
         return new ErrorDto(e.getMessage(), HttpStatus.NOT_FOUND.value());
     }
 
+    /**
+     * Обработчик исключений для случаев, когда операция не может быть выполнена.
+     *
+     * @param e исключение {@link OperationException}, содержащее информацию о причине ошибки.
+     * @return объект {@link ErrorDto} с сообщением об ошибке и статусом 422 (Unprocessable Entity).
+     */
     @ExceptionHandler(OperationException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ErrorDto error(OperationException e) {
