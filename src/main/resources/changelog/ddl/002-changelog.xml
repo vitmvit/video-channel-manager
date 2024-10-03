@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="002" author="vitikova" dbms="postgresql">
+        <sql>
+            DROP TABLE IF EXISTS "channel";
+            CREATE TABLE "public"."channel"
+            (
+                "author_id"     bigint,
+                "creation_date" timestamp(6),
+                "id"            bigint DEFAULT nextval('channel_id_seq') NOT NULL,
+                "avatar"        character varying(255),
+                "category"      character varying(255),
+                "description"   character varying(255),
+                "main_language" character varying(255)                   NOT NULL,
+                "name"          character varying(255)                   NOT NULL,
+                CONSTRAINT "channel_pkey" PRIMARY KEY ("id")
+            ) WITH (oids = false);
+
+        </sql>
+    </changeSet>
+</databaseChangeLog>

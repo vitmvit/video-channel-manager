@@ -1,0 +1,810 @@
+openapi: 3.0.3
+info:
+  title: Video channel manager
+  description: |-
+    Сущности:
+      - Канал (имеет название, краткое описание, автора (среди зарегистрированных пользователей), неограниченное число подписчиков (тоже среди зарегистрированных пользователей), дату создания, один основной язык, аватарку, одну категорию.
+      - Пользователь (имеет никнейм, имя, почту и может подписаться на неограниченное число каналов.
+      
+    Необходимые операции:
+    
+      - Создание и редактирование информации о пользователе
+      - Создание и редактирование информации о канале
+      - Подписка пользователя на канал
+      - Отписка пользователя с канала
+      - Отображение списка всех каналов с пагинацией и фильтрацией по названию, языку и категории. Список должен содержать название, количество подписчиков, язык, аватарку, категорию
+      - Отображение списка всех подписок пользователя (без пагинации), список должен содержать только название каналов
+      - Получение подробной информации по каналу (все, что в списке + описание, автор, дата создания)
+    
+    Ссылки:
+    - [Репозиторий задачи](https://github.com/vitmvit/video-channel-manager/tree/feature/structure)
+  version: 1.0.11
+servers:
+  - url: http://localhost:8080 - Generated server url
+tags:
+  - name: channel-controller
+    description: Операции с каналами
+  - name: user-controller
+    description: Операции с пользователем, создание каналов и подписка на каналы
+paths:
+  /api/users:
+    put:
+      tags:
+      - user-controller
+      operationId: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateDto'
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+    post:
+      tags:
+      - user-controller
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateDto'
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "422":
+          description: Unprocessable Entity
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoUserCreate'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+  /api/channels:
+    get:
+      tags:
+      - channel-controller
+      operationId: getAll
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        example: 0
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: limit
+        in: query
+        required: false
+        example: 1
+        schema:
+          type: integer
+          format: int32
+          default: 15
+      - name: name
+        in: query
+        required: false
+        example: channel_ONE
+        schema:
+          type: string
+      - name: language
+        in: query
+        required: false
+        example: RU
+        schema:
+          type: string
+          enum:
+          - RU
+          - ENGLISH
+      - name: category
+        in: query
+        required: false
+        example: ENTERTAINMENT
+        schema:
+          type: string
+          enum:
+          - ENTERTAINMENT
+          - EDUCATION
+          - TECHNOLOGY
+          - HEALTH_AND_FITNESS
+          - TRAVEL
+          - PERSONAL_DEVELOPMENT
+          - BUSINESS_AND_FINANCE
+          - SOCIAL_AND_ENVIRONMENTAL_ISSUES
+          - HOBBIES_AND_INTERESTS
+          - NEWS_AND_EVENTS
+          - MUSIC
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageChannelInfoDto'
+    put:
+      tags:
+      - channel-controller
+      operationId: update_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelUpdateDto'
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "422":
+          description: Unprocessable Entity
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoChannelUpdate'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ChannelDto'
+    post:
+      tags:
+      - channel-controller
+      operationId: create_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelCreateDto'
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "422":
+          description: Unprocessable Entity
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoChannelCreate'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ChannelDto'
+  /api/users/unsubscribe/{nameChannel}/{nickname}:
+    post:
+      tags:
+      - user-controller
+      operationId: unsubscribe
+      parameters:
+      - name: nameChannel
+        in: path
+        required: true
+        example: user1@mail.com
+        schema:
+          type: string
+      - name: nickname
+        in: path
+        required: true
+        example: channel-one
+        schema:
+          type: string
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "422":
+          description: Unprocessable Entity
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoUserUnsubscribe'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+  /api/users/subscribe/{nameChannel}/{nickname}:
+    post:
+      tags:
+      - user-controller
+      operationId: subscribe
+      parameters:
+      - name: nameChannel
+        in: path
+        required: true
+        example: user1@mail.com
+        schema:
+          type: string
+      - name: nickname
+        in: path
+        required: true
+        example: channel-one
+        schema:
+          type: string
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "422":
+          description: Unprocessable Entity
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoUserSubscribe'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+  /api/users/{id}:
+    get:
+      tags:
+      - user-controller
+      operationId: findById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        example: 2
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+    delete:
+      tags:
+      - user-controller
+      operationId: delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        example: 2
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+  /api/users/channels/{id}:
+    get:
+      tags:
+      - user-controller
+      operationId: getChannelsSubscribe
+      parameters:
+      - name: id
+        in: path
+        required: true
+        example: 2
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChannelNameDto'
+  /api/channels/{id}:
+    get:
+      tags:
+      - channel-controller
+      operationId: findById_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        example: 7
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ChannelDto'
+    delete:
+      tags:
+      - channel-controller
+      operationId: delete_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        example: 7
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "200":
+          description: OK
+  /api/channels/name/{name}:
+    get:
+      tags:
+      - channel-controller
+      operationId: findByName
+      parameters:
+      - name: name
+        in: path
+        required: true
+        example: channel-one
+        schema:
+          type: string
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDto500'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorDtoEntityNotFound'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ChannelDto'
+components:
+  schemas:
+    ErrorDto500:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+        errorCode:
+          type: integer
+          format: int32
+          example: 500
+    ErrorDtoChannelUpdate:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          example: Channel update error
+        errorCode:
+          type: integer
+          format: int32
+          example: 422
+    ErrorDtoChannelCreate:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          example: Channel create error
+        errorCode:
+          type: integer
+          format: int32
+          example: 422
+    ErrorDtoUserCreate:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          example: User create error
+        errorCode:
+          type: integer
+          format: int32
+          example: 422
+    ErrorDtoUserSubscribe:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          example: Subscribe error
+        errorCode:
+          type: integer
+          format: int32
+          example: 422
+    ErrorDtoUserUnsubscribe:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          example: Unsubscribe error
+        errorCode:
+          type: integer
+          format: int32
+          example: 422
+    ErrorDtoEntityNotFound:
+      type: object
+      properties:
+        errorMessage:
+          type: string
+          example: Entity not found!
+        errorCode:
+          type: integer
+          format: int32
+          example: 404
+    UserUpdateDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 2
+        nickname:
+          type: string
+          example: user1@gmail.com
+        name:
+          type: string
+          example: user1@gmail.com
+        email:
+          type: string
+          example: user1@gmail.com
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 2
+        nickname:
+          type: string
+          example: user1@mail.com
+        name:
+          type: string
+          example: user1@mail.com
+        email:
+          type: string
+          example: user1@mail.com
+    ChannelUpdateDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 7
+        name:
+          type: string
+          example: channel-one
+        description:
+          type: string
+          example: channel-one
+        author:
+          $ref: '#/components/schemas/UserDto'
+        mainLanguage:
+          type: string
+          enum:
+          - RU
+          - ENGLISH
+        avatar:
+          type: string
+          example: b3505649-24f9-4592-91a0-84cef8a1d46d
+        category:
+          type: string
+          enum:
+          - ENTERTAINMENT
+          - EDUCATION
+          - TECHNOLOGY
+          - HEALTH_AND_FITNESS
+          - TRAVEL
+          - PERSONAL_DEVELOPMENT
+          - BUSINESS_AND_FINANCE
+          - SOCIAL_AND_ENVIRONMENTAL_ISSUES
+          - HOBBIES_AND_INTERESTS
+          - NEWS_AND_EVENTS
+          - MUSIC
+    ChannelDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 7
+        name:
+          type: string
+          example: channel-one
+        description:
+          type: string
+          example: channel-one
+        author:
+          $ref: '#/components/schemas/UserDto'
+        countSubscribers:
+          type: integer
+          format: int32
+        creationDate:
+          type: string
+          format: date-time
+        mainLanguage:
+          type: string
+          enum:
+          - RU
+          - ENGLISH
+        avatar:
+          type: string
+          example: b3505649-24f9-4592-91a0-84cef8a1d46d
+        category:
+          type: string
+          enum:
+          - ENTERTAINMENT
+          - EDUCATION
+          - TECHNOLOGY
+          - HEALTH_AND_FITNESS
+          - TRAVEL
+          - PERSONAL_DEVELOPMENT
+          - BUSINESS_AND_FINANCE
+          - SOCIAL_AND_ENVIRONMENTAL_ISSUES
+          - HOBBIES_AND_INTERESTS
+          - NEWS_AND_EVENTS
+          - MUSIC
+    UserCreateDto:
+      type: object
+      properties:
+        nickname:
+          type: string
+          example: user1@mail.com
+        name:
+          type: string
+          example: user1@mail.com
+        email:
+          type: string
+          example: user1@mail.com
+    ChannelCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: channel-one
+        description:
+          type: string
+          example: channel-one
+        author:
+          $ref: '#/components/schemas/UserDto'
+        mainLanguage:
+          type: string
+          enum:
+          - RU
+          - ENGLISH
+        avatar:
+          type: string
+          example: b3505649-24f9-4592-91a0-84cef8a1d46d
+        category:
+          type: string
+          enum:
+          - ENTERTAINMENT
+          - EDUCATION
+          - TECHNOLOGY
+          - HEALTH_AND_FITNESS
+          - TRAVEL
+          - PERSONAL_DEVELOPMENT
+          - BUSINESS_AND_FINANCE
+          - SOCIAL_AND_ENVIRONMENTAL_ISSUES
+          - HOBBIES_AND_INTERESTS
+          - NEWS_AND_EVENTS
+          - MUSIC
+    ChannelNameDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: channel_ONE
+    ChannelInfoDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 14
+        name:
+          type: string
+          example: channel_ONE
+        countSubscribers:
+          type: integer
+          format: int32
+          example: 1
+        mainLanguage:
+          type: string
+          enum:
+          - RU
+          - ENGLISH
+        avatar:
+          type: string
+          example: b3505649-24f9-4592-91a0-84cef8a1d46d
+        category:
+          type: string
+          enum:
+          - ENTERTAINMENT
+          - EDUCATION
+          - TECHNOLOGY
+          - HEALTH_AND_FITNESS
+          - TRAVEL
+          - PERSONAL_DEVELOPMENT
+          - BUSINESS_AND_FINANCE
+          - SOCIAL_AND_ENVIRONMENTAL_ISSUES
+          - HOBBIES_AND_INTERESTS
+          - NEWS_AND_EVENTS
+          - MUSIC
+    PageChannelInfoDto:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+          example: 1
+        totalElements:
+          type: integer
+          format: int64
+          example: 1
+        size:
+          type: integer
+          format: int32
+          example: 15
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelInfoDto'
+        number:
+          type: integer
+          format: int32
+          example: 0
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+          example: 0
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        paged:
+          type: boolean
+          example: true
+        unpaged:
+          type: boolean
+          example: false
+        pageNumber:
+          type: integer
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          example: 15
+    SortObject:
+      type: object
+      properties:
+        empty:
+          type: boolean
+          example: true
+        unsorted:
+          type: boolean
+          example: true
+        sorted:
+          type: boolean
+          example: false
