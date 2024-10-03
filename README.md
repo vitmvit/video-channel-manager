@@ -2,7 +2,7 @@
 
 ## Задача
 
-Требуется спроектировать REST веб-сервис для работы с каналами видеохостинга.
+Требуется написать REST веб-сервис для работы с каналами видеохостинга.
 
 #### Сущности:
 
@@ -40,11 +40,15 @@ http://localhost:8080/api/doc/swagger-ui/index.html#
 
 #### Технологии:
 
+- Java 17
 - Spring Boot
+- Gradle
 - Jpa Repository
-- Mapstruct
+- MapStruct
 - Lombok
 - Postgres
+- Spring Data Repositories 
+- Java Streams
 
 ## Контроллеры
 
