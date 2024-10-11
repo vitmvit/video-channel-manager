@@ -1,6 +1,7 @@
 package by.vitikova.video.channel.manager.model.dto.update;
 
-import by.vitikova.video.channel.manager.model.dto.create.ChannelCreateDto;
+import by.vitikova.video.channel.manager.model.enums.CategoryChannel;
+import by.vitikova.video.channel.manager.model.enums.LanguageChannel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChannelUpdateDto extends ChannelCreateDto {
+public class ChannelUpdateDto {
 
-    private Long id;
+    private String name;
+    private String description;
+    private Long authorId;
+    private LanguageChannel mainLanguage;
+    private CategoryChannel category;
 }

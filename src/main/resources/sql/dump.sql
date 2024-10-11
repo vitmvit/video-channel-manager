@@ -17,7 +17,7 @@ CREATE TABLE "public"."channel"
 
 TRUNCATE "channel";
 INSERT INTO "channel" ("author_id", "creation_date", "id", "avatar", "category", "description", "main_language", "name")
-VALUES (3, '2024-09-29 14:50:37.711583', 14, 'b3505649-24f9-4592-91a0-84cef8a1d46d', 'MUSIC', 'channel_ONE', 'ENGLISH',
+VALUES (3, '2024-09-29 14:50:37.711583', 14, 'b3505649-24f9-4592-91a0-84cef8a1d46d', 'MUSIC', 'channel_ONE', 'EN',
         'channel_ONE');
 
 DROP TABLE IF EXISTS "user_channel_subscriptions";

@@ -19,8 +19,8 @@ public class ChannelDto {
     private Long id;
     private String name;
     private String description;
-    private UserDto author;
-    private int countSubscribers;
+    private Long authorId;
+    private int subscribersCount;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime creationDate;

@@ -8,6 +8,8 @@ import by.vitikova.video.channel.manager.model.dto.update.ChannelUpdateDto;
 import by.vitikova.video.channel.manager.model.entity.Channel;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ChannelConverter {
 
@@ -17,8 +19,8 @@ public interface ChannelConverter {
             @Mapping(target = "id", source = "id"),
             @Mapping(target = "name", source = "name"),
             @Mapping(target = "description", source = "description"),
-            @Mapping(target = "author", source = "author"),
-            @Mapping(target = "countSubscribers", expression = "java(source.getSubscribers() != null ? source.getSubscribers().size() : 0)"),
+            @Mapping(target = "authorId", source = "authorId"),
+            @Mapping(target = "subscribersCount", expression = "java(source.getSubscribers() != null ? source.getSubscribers().size() : 0)"),
             @Mapping(target = "creationDate", source = "creationDate"),
             @Mapping(target = "mainLanguage", source = "mainLanguage"),
             @Mapping(target = "avatar", source = "avatar"),
@@ -29,12 +31,14 @@ public interface ChannelConverter {
     @Mappings({
             @Mapping(target = "id", source = "id"),
             @Mapping(target = "name", source = "name"),
-            @Mapping(target = "countSubscribers", expression = "java(source.getSubscribers() != null ? source.getSubscribers().size() : 0)"),
+            @Mapping(target = "subscribersCount", expression = "java(source.getSubscribers() != null ? source.getSubscribers().size() : 0)"),
             @Mapping(target = "mainLanguage", source = "mainLanguage"),
             @Mapping(target = "avatar", source = "avatar"),
             @Mapping(target = "category", source = "category")
     })
     ChannelInfoDto convertToInfo(Channel source);
+
+    List<ChannelInfoDto> convertToInfoList(List<Channel> source);
 
     Channel convert(ChannelCreateDto source);
 

@@ -27,7 +27,7 @@ public class UserController {
                 .body(userService.findById(id));
     }
 
-    @GetMapping("/channels/{id}")
+    @GetMapping("/{id}/channels")
     public ResponseEntity<List<ChannelNameDto>> getChannelsSubscribe(@PathVariable("id") Long id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -41,23 +41,23 @@ public class UserController {
                 .body(userService.create(dto));
     }
 
-    @PostMapping("/subscribe/{nameChannel}/{nickname}")
-    public ResponseEntity<Void> subscribe(@PathVariable("nameChannel") String nameChannel, @PathVariable("nickname") String nickname) {
-        userService.subscribe(nameChannel, nickname);
+    @PostMapping("/{userId}/subscribe/{channelId}")
+    public ResponseEntity<Void> subscribe(@PathVariable("channelId") Long channelId, @PathVariable("userId") Long userId) {
+        userService.subscribe(channelId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/unsubscribe/{nameChannel}/{nickname}")
-    public ResponseEntity<Void> unsubscribe(@PathVariable("nameChannel") String nameChannel, @PathVariable("nickname") String nickname) {
-        userService.unsubscribe(nameChannel, nickname);
+    @PostMapping("/{userId}/unsubscribe/{channelId}")
+    public ResponseEntity<Void> unsubscribe(@PathVariable("channelId") Long channelId, @PathVariable("userId") Long userId) {
+        userService.unsubscribe(channelId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PutMapping
-    public ResponseEntity<UserDto> update(@RequestBody UserUpdateDto dto) {
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> update(@PathVariable("id") Long id, @RequestBody UserUpdateDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(userService.update(dto));
+                .body(userService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")

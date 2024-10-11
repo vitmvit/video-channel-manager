@@ -1,6 +1,5 @@
 package by.vitikova.video.channel.manager.model.dto.create;
 
-import by.vitikova.video.channel.manager.model.dto.UserDto;
 import by.vitikova.video.channel.manager.model.enums.CategoryChannel;
 import by.vitikova.video.channel.manager.model.enums.LanguageChannel;
 import lombok.AllArgsConstructor;
@@ -16,8 +15,7 @@ public class ChannelCreateDto {
 
     private String name;
     private String description;
-    private UserDto author;
+    private Long authorId;
     private LanguageChannel mainLanguage;
-    private String avatar;
     private CategoryChannel category;
 }

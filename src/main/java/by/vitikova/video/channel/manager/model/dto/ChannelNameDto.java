@@ -11,5 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ChannelNameDto {
 
+    private Long id;
     private String name;
 }

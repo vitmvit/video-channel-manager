@@ -15,7 +15,7 @@ public class ChannelInfoDto {
 
     private Long id;
     private String name;
-    private int countSubscribers;
+    private int subscribersCount;
     private LanguageChannel mainLanguage;
     private String avatar;
     private CategoryChannel category;

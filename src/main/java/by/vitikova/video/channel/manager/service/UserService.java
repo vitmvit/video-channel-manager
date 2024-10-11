@@ -13,13 +13,13 @@ public interface UserService {
 
     UserDto create(UserCreateDto dto);
 
-    UserDto update(UserUpdateDto dto);
+    UserDto update(Long id, UserUpdateDto dto);
 
     List<ChannelNameDto> getChannelsSubscribe(Long id);
 
-    void subscribe(String nameChannel, String nickname);
+    void subscribe(Long channelId, Long userId);
 
-    void unsubscribe(String nameChannel, String nickname);
+    void unsubscribe(Long channelId, Long userId);
 
     void delete(Long id);
 }

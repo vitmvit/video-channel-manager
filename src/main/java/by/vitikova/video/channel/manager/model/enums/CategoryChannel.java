@@ -1,8 +1,10 @@
 package by.vitikova.video.channel.manager.model.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum CategoryChannel {
 
     ENTERTAINMENT("ENTERTAINMENT"),
@@ -17,9 +19,5 @@ public enum CategoryChannel {
     NEWS_AND_EVENTS("NEWS_AND_EVENTS"),
     MUSIC("MUSIC");
 
-    private final String category;
-
-    CategoryChannel(String category) {
-        this.category = category;
-    }
+    private final String name;
 }

@@ -6,17 +6,25 @@ import by.vitikova.video.channel.manager.exception.OperationException;
 import by.vitikova.video.channel.manager.model.dto.ChannelDto;
 import by.vitikova.video.channel.manager.model.dto.ChannelInfoDto;
 import by.vitikova.video.channel.manager.model.dto.create.ChannelCreateDto;
+import by.vitikova.video.channel.manager.model.dto.page.ChannelFilterDto;
+import by.vitikova.video.channel.manager.model.dto.page.PageContentDto;
+import by.vitikova.video.channel.manager.model.dto.page.PageDto;
+import by.vitikova.video.channel.manager.model.dto.page.PageParamDto;
 import by.vitikova.video.channel.manager.model.dto.update.ChannelUpdateDto;
 import by.vitikova.video.channel.manager.model.entity.Channel;
-import by.vitikova.video.channel.manager.model.enums.CategoryChannel;
-import by.vitikova.video.channel.manager.model.enums.LanguageChannel;
 import by.vitikova.video.channel.manager.repository.ChannelRepository;
 import by.vitikova.video.channel.manager.service.ChannelService;
+import by.vitikova.video.channel.manager.specification.ChannelSpecification;
+import by.vitikova.video.channel.manager.util.FileUtils;
+import by.vitikova.video.channel.manager.util.PageUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * Реализация сервиса канала.
@@ -41,64 +49,87 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     /**
-     * Находит канал по названию.
+     * Получает страницу каналов с возможностью фильтрации.
      *
-     * @param name название канала.
-     * @return объект {@link ChannelDto}, содержащий информацию о канале.
-     * @throws EntityNotFoundException если канал с данным названием не найден.
+     * @param param  параметры страницы, включая номер страницы и размер страницы
+     * @param filter объект, содержащий критерии фильтрации каналов
+     * @return {@link PageContentDto<ChannelInfoDto>} объект, содержащий информацию о странице и списке каналов
+     * (пустой список, если каналы не найдены)
      */
     @Override
-    public ChannelDto findByName(String name) {
-        return channelConverter.convertToDto(channelRepository.findByName(name).orElseThrow(EntityNotFoundException::new));
-    }
-
-    /**
-     * Получает список всех каналов с параметрами пагинации и фильтрации.
-     *
-     * @param offset   смещение для пагинации.
-     * @param limit    предел количества возвращаемых каналов.
-     * @param name     название канала для фильтрации.
-     * @param language основной язык канала для фильтрации.
-     * @param category категория канала для фильтрации.
-     * @return страница объектов {@link ChannelInfoDto}, представляющих каналы.
-     */
-    @Override
-    public Page<ChannelInfoDto> getAll(Integer offset, Integer limit, String name, LanguageChannel language, CategoryChannel category) {
-        Page<Channel> personPage = channelRepository.findAllByNameAndMainLanguageAndCategory(PageRequest.of(offset, limit), name, language, category);
-        return personPage.map(channelConverter::convertToInfo);
+    public PageContentDto<ChannelInfoDto> getAll(PageParamDto param, ChannelFilterDto filter) {
+        var pageable = PageUtils.page(param);
+        var specification = Specification.where(ChannelSpecification.findAll(filter));
+        Page<Channel> page = channelRepository.findAll(specification, pageable);
+        return new PageContentDto<>(
+                new PageDto(param.pageNumber(), param.pageSize(), page.getTotalPages(), page.getTotalElements()),
+                page.getContent().isEmpty()
+                        ? List.of()
+                        : channelConverter.convertToInfoList(page.getContent())
+        );
     }
 
     /**
      * Создает новый канал.
      *
-     * @param dto объект {@link ChannelCreateDto} с данными для создания канала.
+     * @param dto    объект {@link ChannelCreateDto} с данными для создания канала.
+     * @param avatar аватарка
      * @return объект {@link ChannelDto}, содержащий информацию о созданном канале.
      * @throws OperationException если произошла ошибка при создании канала.
      */
     @Override
     @Transactional
-    public ChannelDto create(ChannelCreateDto dto) {
+    public ChannelDto create(ChannelCreateDto dto, MultipartFile avatar) {
         try {
-            return channelConverter.convertToDto(channelRepository.save(channelConverter.convert(dto)));
+            var channel = channelConverter.convert(dto);
+            channel.setAvatar(FileUtils.convertMultipartFileToBase64(avatar));
+            return channelConverter.convertToDto(channelRepository.save(channel));
         } catch (Exception ex) {
             throw new OperationException("Channel create error: " + ex.getMessage());
         }
     }
 
     /**
-     * Обновляет информацию о канале.
+     * Обновляет существующий канал с заданным идентификатором.
      *
-     * @param dto объект {@link ChannelUpdateDto} с обновленными данными канала.
-     * @return объект {@link ChannelDto}, содержащий информацию об обновленном канале.
-     * @throws EntityNotFoundException если канал с данным идентификатором не найден.
-     * @throws OperationException      если произошла ошибка при обновлении канала.
+     * @param id  уникальный идентификатор канала, который требуется обновить
+     * @param dto объект, содержащий данные обновления канала
+     * @return {@link ChannelDto} обновленный объект канала, конвертированный в DTO
+     * @throws EntityNotFoundException если канал с заданным идентификатором не найден
+     * @throws OperationException      если произошла ошибка при обновлении канала
      */
     @Override
     @Transactional
-    public ChannelDto update(ChannelUpdateDto dto) {
+    public ChannelDto update(Long id, ChannelUpdateDto dto) {
         try {
-            var channel = channelRepository.findById(dto.getId()).orElseThrow(jakarta.persistence.EntityNotFoundException::new);
+            var channel = channelRepository.findById(id).orElseThrow(EntityNotFoundException::new);
             return channelConverter.convertToDto(channelRepository.save(channelConverter.merge(channel, dto)));
+        } catch (Exception ex) {
+            throw new OperationException("Channel update error: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Обновляет аватар канала.
+     * <p>
+     * Этот метод принимает идентификатор канала и новый аватар в формате
+     * мультипарт файла. Если канал с указанным идентификатором не найден,
+     * выбрасывается исключение {@link EntityNotFoundException}. После
+     * успешного обновления аватар сохраняется в виде строки Base64.
+     *
+     * @param id     идентификатор канала, для которого необходимо обновить аватар
+     * @param avatar новый аватар в формате {@link MultipartFile}, который
+     *               будет преобразован в строку Base64
+     * @return объект {@link ChannelDto}, представляющий обновленный канал
+     * @throws OperationException если произошла ошибка при обновлении канала,
+     *                            например, если не удается преобразовать аватар
+     */
+    @Override
+    public ChannelDto updateAvatar(Long id, MultipartFile avatar) {
+        try {
+            var channel = channelRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+            channel.setAvatar(FileUtils.convertMultipartFileToBase64(avatar));
+            return channelConverter.convertToDto(channelRepository.save(channel));
         } catch (Exception ex) {
             throw new OperationException("Channel update error: " + ex.getMessage());
         }

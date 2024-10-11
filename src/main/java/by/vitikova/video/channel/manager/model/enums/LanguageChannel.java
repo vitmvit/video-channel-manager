@@ -1,16 +1,14 @@
 package by.vitikova.video.channel.manager.model.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum LanguageChannel {
 
     RU("RU"),
-    ENGLISH("ENGLISH");
+    EN("EN");
 
-    private final String language;
-
-    LanguageChannel(String language) {
-        this.language = language;
-    }
+    private final String name;
 }

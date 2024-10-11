@@ -4,15 +4,18 @@ package by.vitikova.video.channel.manager.controller;
 import by.vitikova.video.channel.manager.model.dto.ChannelDto;
 import by.vitikova.video.channel.manager.model.dto.ChannelInfoDto;
 import by.vitikova.video.channel.manager.model.dto.create.ChannelCreateDto;
+import by.vitikova.video.channel.manager.model.dto.page.ChannelFilterDto;
+import by.vitikova.video.channel.manager.model.dto.page.PageContentDto;
+import by.vitikova.video.channel.manager.model.dto.page.PageParamDto;
 import by.vitikova.video.channel.manager.model.dto.update.ChannelUpdateDto;
 import by.vitikova.video.channel.manager.model.enums.CategoryChannel;
 import by.vitikova.video.channel.manager.model.enums.LanguageChannel;
 import by.vitikova.video.channel.manager.service.ChannelService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @AllArgsConstructor
@@ -28,36 +31,36 @@ public class ChannelController {
                 .body(channelService.findById(id));
     }
 
-    @GetMapping("/name/{name}")
-    public ResponseEntity<ChannelDto> findByName(@PathVariable("name") String name) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(channelService.findByName(name));
-    }
-
     @GetMapping
-    public ResponseEntity<Page<ChannelInfoDto>> getAll(@RequestParam(value = "offset", defaultValue = "0") Integer offset,
-                                                       @RequestParam(value = "limit", defaultValue = "15") Integer limit,
-                                                       @RequestParam(value = "name", required = false) String name,
-                                                       @RequestParam(value = "language", required = false) LanguageChannel language,
-                                                       @RequestParam(value = "category", required = false) CategoryChannel category) {
+    public ResponseEntity<PageContentDto<ChannelInfoDto>> getAll(@RequestParam(value = "pageNumber", required = false, defaultValue = "1") int pageNumber,
+                                                                 @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize,
+                                                                 @RequestParam(value = "name", required = false) String name,
+                                                                 @RequestParam(value = "language", required = false) LanguageChannel language,
+                                                                 @RequestParam(value = "category", required = false) CategoryChannel category) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(channelService.getAll(offset, limit, name, language, category));
+                .body(channelService.getAll(new PageParamDto(pageNumber, pageSize), new ChannelFilterDto(name, language, category)));
     }
 
     @PostMapping
-    public ResponseEntity<ChannelDto> create(@RequestBody ChannelCreateDto dto) {
+    public ResponseEntity<ChannelDto> create(@ModelAttribute ChannelCreateDto dto, @RequestParam("avatar") MultipartFile avatar) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(channelService.create(dto));
+                .body(channelService.create(dto, avatar));
     }
 
-    @PutMapping
-    public ResponseEntity<ChannelDto> update(@RequestBody ChannelUpdateDto dto) {
+    @PutMapping("/{id}")
+    public ResponseEntity<ChannelDto> update(@PathVariable("id") Long id, @RequestBody ChannelUpdateDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(channelService.update(dto));
+                .body(channelService.update(id, dto));
+    }
+
+    @PutMapping("/{id}/avatar")
+    public ResponseEntity<ChannelDto> updateAvatar(@PathVariable("id") Long id, @RequestParam("avatar") MultipartFile avatar) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(channelService.updateAvatar(id, avatar));
     }
 
     @DeleteMapping("/{id}")

@@ -60,18 +60,19 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Обновляет информацию о пользователе.
+     * Обновляет информацию о пользователе с заданным идентификатором.
      *
-     * @param dto объект {@link UserUpdateDto} с обновленными данными пользователя.
-     * @return объект {@link UserDto}, содержащий информацию об обновленном пользователе.
-     * @throws EntityNotFoundException если пользователь с данным идентификатором не найден.
-     * @throws OperationException      если произошла ошибка при обновлении пользователя.
+     * @param id  уникальный идентификатор пользователя, который требуется обновить
+     * @param dto объект, содержащий данные обновления пользователя
+     * @return {@link UserDto} обновленный объект пользователя, конвертированный в DTO
+     * @throws EntityNotFoundException если пользователь с заданным идентификатором не найден
+     * @throws OperationException      если произошла ошибка при обновлении пользователя
      */
     @Override
     @Transactional
-    public UserDto update(UserUpdateDto dto) {
+    public UserDto update(Long id, UserUpdateDto dto) {
         try {
-            var user = userRepository.findById(dto.getId()).orElseThrow(EntityNotFoundException::new);
+            var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
             return userConverter.convert(userRepository.save(userConverter.merge(user, dto)));
         } catch (Exception ex) {
             throw new OperationException("User update error: " + ex.getMessage());
@@ -93,17 +94,17 @@ public class UserServiceImpl implements UserService {
     /**
      * Подписывает пользователя на канал.
      *
-     * @param nameChannel название канала.
-     * @param nickname    никнейм пользователя.
+     * @param channelId название канала.
+     * @param userId    никнейм пользователя.
      * @throws EntityNotFoundException если пользователь или канал не найдены.
      * @throws OperationException      если произошла ошибка при подписке.
      */
     @Override
     @Transactional
-    public void subscribe(String nameChannel, String nickname) {
+    public void subscribe(Long channelId, Long userId) {
         try {
-            var user = userRepository.findByNickname(nickname).orElseThrow(EntityNotFoundException::new);
-            var channel = channelRepository.findByName(nameChannel).orElseThrow(EntityNotFoundException::new);
+            var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+            var channel = channelRepository.findById(channelId).orElseThrow(EntityNotFoundException::new);
 
             user.getSubscribedChannels().add(channel);
             userRepository.save(user);
@@ -122,10 +123,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public void unsubscribe(String nameChannel, String nickname) {
+    public void unsubscribe(Long channelId, Long userId) {
         try {
-            var user = userRepository.findByNickname(nickname).orElseThrow(EntityNotFoundException::new);
-            var channel = channelRepository.findByName(nameChannel).orElseThrow(EntityNotFoundException::new);
+            var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+            var channel = channelRepository.findById(channelId).orElseThrow(EntityNotFoundException::new);
 
             channel.getSubscribers().remove(user);
             channelRepository.save(channel);
