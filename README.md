@@ -154,7 +154,7 @@ Exception:
 Request:
 
 ```http request
-http://localhost:8080/api/users/1/subscribe/11
+http://localhost:8080/api/users/1/subscription/11
 ```
 
 Response:
@@ -177,7 +177,7 @@ Exception:
 Request:
 
 ```http request
-http://localhost:8080/api/users/1/unsubscribe/11
+http://localhost:8080/api/users/1/unsubscription/11
 ```
 
 Response:
