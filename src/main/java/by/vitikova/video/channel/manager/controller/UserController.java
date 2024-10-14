@@ -41,13 +41,13 @@ public class UserController {
                 .body(userService.create(dto));
     }
 
-    @PostMapping("/{userId}/subscribe/{channelId}")
+    @PostMapping("/{userId}/subscription/{channelId}")
     public ResponseEntity<Void> subscribe(@PathVariable("channelId") Long channelId, @PathVariable("userId") Long userId) {
         userService.subscribe(channelId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/{userId}/unsubscribe/{channelId}")
+    @PostMapping("/{userId}/unsubscription/{channelId}")
     public ResponseEntity<Void> unsubscribe(@PathVariable("channelId") Long channelId, @PathVariable("userId") Long userId) {
         userService.unsubscribe(channelId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
