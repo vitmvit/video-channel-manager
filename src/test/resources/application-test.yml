@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    username: test
+    password: test
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: true
+    change-log: changelog-master-test.xml
