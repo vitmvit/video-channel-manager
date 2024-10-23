@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,8 +106,9 @@ public class UserServiceImpl implements UserService {
         try {
             var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
             var channel = channelRepository.findById(channelId).orElseThrow(EntityNotFoundException::new);
-
-            user.getSubscribedChannels().add(channel);
+            var newList = new ArrayList<>(user.getSubscribedChannels());
+            newList.add(channel);
+            user.setSubscribedChannels(newList);
             userRepository.save(user);
         } catch (Exception ex) {
             throw new OperationException("Subscribe error: " + ex.getMessage());
@@ -116,8 +118,8 @@ public class UserServiceImpl implements UserService {
     /**
      * Отписывает пользователя от канала.
      *
-     * @param nameChannel название канала.
-     * @param nickname    никнейм пользователя.
+     * @param channelId id канала.
+     * @param userId    id пользователя.
      * @throws EntityNotFoundException если пользователь или канал не найдены.
      * @throws OperationException      если произошла ошибка при отписке.
      */
@@ -127,9 +129,10 @@ public class UserServiceImpl implements UserService {
         try {
             var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
             var channel = channelRepository.findById(channelId).orElseThrow(EntityNotFoundException::new);
-
-            channel.getSubscribers().remove(user);
-            channelRepository.save(channel);
+            var newList = new ArrayList<>(user.getSubscribedChannels());
+            newList.remove(channel);
+            user.setSubscribedChannels(newList);
+            userRepository.save(user);
         } catch (Exception ex) {
             throw new OperationException("Unsubscribe error: " + ex.getMessage());
         }
