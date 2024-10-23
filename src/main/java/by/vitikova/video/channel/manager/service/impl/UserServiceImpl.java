@@ -52,11 +52,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto create(UserCreateDto dto) {
-        try {
-            return userConverter.convert(userRepository.save(userConverter.convert(dto)));
-        } catch (Exception ex) {
-            throw new OperationException("User create error: " + ex.getMessage());
-        }
+        return userConverter.convert(userRepository.save(userConverter.convert(dto)));
     }
 
     /**
@@ -71,12 +67,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto update(Long id, UserUpdateDto dto) {
-        try {
-            var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-            return userConverter.convert(userRepository.save(userConverter.merge(user, dto)));
-        } catch (Exception ex) {
-            throw new OperationException("User update error: " + ex.getMessage());
-        }
+        var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return userConverter.convert(userRepository.save(userConverter.merge(user, dto)));
     }
 
     /**
@@ -86,7 +78,7 @@ public class UserServiceImpl implements UserService {
      * @return список объектов {@link ChannelNameDto}, представляющих каналы подписки.* @throws EntityNotFoundException если пользователь с данным идентификатором не найден.
      */
     @Override
-    public List<ChannelNameDto> getChannelsSubscribe(Long id) {
+    public List<ChannelNameDto> getSubscribedChannels(Long id) {
         var user = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return user.getSubscribedChannels().stream().map(channelConverter::convert).collect(Collectors.toList());
     }
@@ -102,37 +94,29 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void subscribe(Long channelId, Long userId) {
-        try {
-            var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
-            var channel = channelRepository.findById(channelId).orElseThrow(EntityNotFoundException::new);
+        var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        var channel = channelRepository.findById(channelId).orElseThrow(EntityNotFoundException::new);
 
-            user.getSubscribedChannels().add(channel);
-            userRepository.save(user);
-        } catch (Exception ex) {
-            throw new OperationException("Subscribe error: " + ex.getMessage());
-        }
+        user.getSubscribedChannels().add(channel);
+        userRepository.save(user);
     }
 
     /**
      * Отписывает пользователя от канала.
      *
-     * @param nameChannel название канала.
-     * @param nickname    никнейм пользователя.
+     * @param channelId id канала.
+     * @param userId    id пользователя.
      * @throws EntityNotFoundException если пользователь или канал не найдены.
      * @throws OperationException      если произошла ошибка при отписке.
      */
     @Override
     @Transactional
     public void unsubscribe(Long channelId, Long userId) {
-        try {
-            var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
-            var channel = channelRepository.findById(channelId).orElseThrow(EntityNotFoundException::new);
+        var user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        var channel = channelRepository.findById(channelId).orElseThrow(EntityNotFoundException::new);
 
-            channel.getSubscribers().remove(user);
-            channelRepository.save(channel);
-        } catch (Exception ex) {
-            throw new OperationException("Unsubscribe error: " + ex.getMessage());
-        }
+        channel.getSubscribers().remove(user);
+        channelRepository.save(channel);
     }
 
     /**

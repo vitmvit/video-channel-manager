@@ -80,13 +80,9 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     @Transactional
     public ChannelDto create(ChannelCreateDto dto, MultipartFile avatar) {
-        try {
-            var channel = channelConverter.convert(dto);
-            channel.setAvatar(FileUtils.convertMultipartFileToBase64(avatar));
-            return channelConverter.convertToDto(channelRepository.save(channel));
-        } catch (Exception ex) {
-            throw new OperationException("Channel create error: " + ex.getMessage());
-        }
+        var channel = channelConverter.convert(dto);
+        channel.setAvatar(FileUtils.convertMultipartFileToBase64(avatar));
+        return channelConverter.convertToDto(channelRepository.save(channel));
     }
 
     /**
@@ -101,12 +97,8 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     @Transactional
     public ChannelDto update(Long id, ChannelUpdateDto dto) {
-        try {
-            var channel = channelRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-            return channelConverter.convertToDto(channelRepository.save(channelConverter.merge(channel, dto)));
-        } catch (Exception ex) {
-            throw new OperationException("Channel update error: " + ex.getMessage());
-        }
+        var channel = channelRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return channelConverter.convertToDto(channelRepository.save(channelConverter.merge(channel, dto)));
     }
 
     /**
@@ -126,13 +118,9 @@ public class ChannelServiceImpl implements ChannelService {
      */
     @Override
     public ChannelDto updateAvatar(Long id, MultipartFile avatar) {
-        try {
-            var channel = channelRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-            channel.setAvatar(FileUtils.convertMultipartFileToBase64(avatar));
-            return channelConverter.convertToDto(channelRepository.save(channel));
-        } catch (Exception ex) {
-            throw new OperationException("Channel update error: " + ex.getMessage());
-        }
+        var channel = channelRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        channel.setAvatar(FileUtils.convertMultipartFileToBase64(avatar));
+        return channelConverter.convertToDto(channelRepository.save(channel));
     }
 
     /**

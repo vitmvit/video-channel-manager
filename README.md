@@ -54,7 +54,7 @@ http://localhost:8080/api/doc/swagger-ui/index.html#
 
 ### UserController
 
-#### GET ResponseEntity<UserDto> findById(@PathVariable("id") Long id):
+#### GET UserDto findById(@PathVariable("id") Long id):
 
 Request:
 
@@ -82,7 +82,7 @@ Entity not found if user not found:
 }
 ```
 
-#### GET ResponseEntity<List<ChannelNameDto>> getChannelsSubscribe(@PathVariable("id") Long id):
+#### GET List<ChannelNameDto> getChannelsSubscribe(@PathVariable("id") Long id):
 
 Request:
 
@@ -111,7 +111,7 @@ Empty list:
 []
 ```
 
-#### POST ResponseEntity<UserDto> create(@RequestBody UserCreateDto dto):
+#### POST UserDto create(@RequestBody UserCreateDto dto):
 
 Request:
 
@@ -149,12 +149,12 @@ Exception:
 }
 ```
 
-#### POST ResponseEntity<Void> subscribe(@PathVariable("channelId") Long channelId, @PathVariable("userId") Long userId):
+#### POST void subscribe(@PathVariable("channelId") Long channelId, @PathVariable("userId") Long userId):
 
 Request:
 
 ```http request
-http://localhost:8080/api/users/1/subscribe/11
+http://localhost:8080/api/users/1/subscribes/11
 ```
 
 Response:
@@ -172,12 +172,12 @@ Exception:
 }
 ```
 
-#### POST ResponseEntity<Void> unsubscribe(@PathVariable("channelId") Long channelId, @PathVariable("userId") Long userId):
+#### DELETE void unsubscribe(@PathVariable("channelId") Long channelId, @PathVariable("userId") Long userId):
 
 Request:
 
 ```http request
-http://localhost:8080/api/users/1/unsubscribe/11
+http://localhost:8080/api/users/1/subscribes/11
 ```
 
 Response:
@@ -195,7 +195,7 @@ Exception:
 }
 ```
 
-#### PUT ResponseEntity<UserDto> update(@RequestBody UserUpdateDto dto):
+#### PUT UserDto update(@RequestBody UserUpdateDto dto):
 
 Request:
 
@@ -233,7 +233,7 @@ Exception:
 }
 ```
 
-#### DELETE ResponseEntity<Void> delete(@PathVariable("id") Long id):
+#### DELETE void delete(@PathVariable("id") Long id):
 
 Request:
 
@@ -249,7 +249,7 @@ Response:
 
 ### ChannelController
 
-#### GET ResponseEntity<ChannelDto> findById(@PathVariable("id") Long id) :
+#### GET ChannelDto findById(@PathVariable("id") Long id) :
 
 Request:
 
@@ -282,7 +282,7 @@ Entity not found if user not found:
 }
 ```
 
-#### GET ResponseEntity<PageContentDto<ChannelInfoDto>> getAll(@RequestParam(value = "pageNumber", required = false, defaultValue = "1") int pageNumber, @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "language", required = false) LanguageChannel language, @RequestParam(value = "category", required = false) CategoryChannel category):
+#### GET PageContentDto<ChannelInfoDto> getAll(@RequestParam(value = "pageNumber", required = false, defaultValue = "1") int pageNumber, @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "language", required = false) LanguageChannel language, @RequestParam(value = "category", required = false) CategoryChannel category):
 
 Request:
 
@@ -390,7 +390,7 @@ Response:
 }
 ```
 
-#### POST ResponseEntity<ChannelDto> create(@RequestBody ChannelCreateDto dto):
+#### POST ChannelDto create(@RequestBody ChannelCreateDto dto):
 
 Request:
 
@@ -434,7 +434,7 @@ Exception:
 }
 ```
 
-#### PUT ResponseEntity<ChannelDto> update(@PathVariable("id") Long id, @RequestBody ChannelUpdateDto dto):
+#### PUT ChannelDto update(@PathVariable("id") Long id, @RequestBody ChannelUpdateDto dto):
 
 Request:
 
@@ -479,7 +479,7 @@ Exception:
 }
 ```
 
-#### PUT ResponseEntity<ChannelDto> updateAvatar(@PathVariable("id") Long id, @RequestParam("avatar") MultipartFile avatar):
+#### PUT ChannelDto updateAvatar(@PathVariable("id") Long id, @RequestParam("avatar") MultipartFile avatar):
 
 Request:
 
@@ -529,7 +529,7 @@ Exception:
 }
 ```
 
-#### DELETE ResponseEntity<Void> delete(@PathVariable("id") Long id):
+#### DELETE void delete(@PathVariable("id") Long id):
 
 Request:
 

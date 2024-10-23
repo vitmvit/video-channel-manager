@@ -15,7 +15,7 @@ public interface UserService {
 
     UserDto update(Long id, UserUpdateDto dto);
 
-    List<ChannelNameDto> getChannelsSubscribe(Long id);
+    List<ChannelNameDto> getSubscribedChannels(Long id);
 
     void subscribe(Long channelId, Long userId);
 
